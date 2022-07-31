@@ -116,8 +116,9 @@ console.log(articles)
       .then(res=>{
         axiosWithAuth().get('/articles')
           .then(res=> {
+            setArticles(res.data.articles)
             setSpinnerOn(false)
-            setArticles(res.data.articles)})
+          })
         setMessage(res.data.message)
       })
       .catch(err => {
