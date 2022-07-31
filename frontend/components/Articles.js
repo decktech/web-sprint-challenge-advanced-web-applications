@@ -12,9 +12,8 @@ export default function Articles(props) {
     // ✨ grab the articles here, on first render only
 
     getArticles()
-  }, [])
+  }, []) 
 
-  
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
@@ -33,7 +32,7 @@ export default function Articles(props) {
                 </div>
                 <div>
                   <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={false} onClick={() => {deleteArticle(art.article_id)}}>Delete</button>
+                  <button disabled={false} onClick={(e) => {deleteArticle(art.article_id)}}>Delete</button>
                 </div>
               </div>
             )

@@ -23,7 +23,7 @@ export default function App() {
   const navigate = useNavigate()
   const redirectToLogin = () => { navigate('/login') }
   const redirectToArticles = () => { navigate('/articles') }
-
+  
   const logout = () => {
     localStorage.removeItem("token");
     setMessage("Goodbye!");
@@ -62,7 +62,6 @@ export default function App() {
     setSpinnerOn(true);
     axiosWithAuth().get('/articles')
       .then(res=> {
-        console.log(res)
         setArticles(res.data.articles)
         setMessage(res.data.message)
         setSpinnerOn(false)
@@ -87,10 +86,9 @@ export default function App() {
     setSpinnerOn(true);
     axiosWithAuth().post('/articles', { "title": article.title, "text": article.text, "topic": article.topic })
       .then(res=> {
-        console.log(res)
         setArticles([
           ...articles,
-          article
+          res.data.article
         ])
         setMessage(res.data.message)
         setSpinnerOn(false)
@@ -109,19 +107,22 @@ export default function App() {
     // ✨ implement
     // You got this!
   }
-
+console.log(articles)
   const deleteArticle = article_id => {
     // ✨ implement
     setMessage('');
     setSpinnerOn(true);
     axiosWithAuth().delete(`http://localhost:9000/api/articles/${article_id}`)
       .then(res=>{
-        setSpinnerOn(false)
+        axiosWithAuth().get('/articles')
+          .then(res=> {
+            setSpinnerOn(false)
+            setArticles(res.data.articles)})
         setMessage(res.data.message)
-        console.log(res)
       })
       .catch(err => {
         console.log(err)
+        console.log(articles)
         setSpinnerOn(false)
       })
   }
