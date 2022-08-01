@@ -16,7 +16,7 @@ export default function App() {
   // ✨ MVP can be achieved with these states
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
-  const [currentArticleId, setCurrentArticleId] = useState()
+  const [currentArticle, setCurrentArticle] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
   // ✨ Research `useNavigate` in React Router v.6
@@ -105,14 +105,24 @@ export default function App() {
 
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
-    // You got this!
+    // You got this! 
+    setMessage('');
+    setSpinnerOn(true);
+    axiosWithAuth().put(`/articles/2`, { "title": "foo", "text": "bar", "topic": "React" })
+      .then(res => {
+        console.log(res)
+        setSpinnerOn(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
-console.log(articles)
+
   const deleteArticle = article_id => {
     // ✨ implement
     setMessage('');
     setSpinnerOn(true);
-    axiosWithAuth().delete(`http://localhost:9000/api/articles/${article_id}`)
+    axiosWithAuth().delete(`/articles/${article_id}`)
       .then(res=>{
         axiosWithAuth().get('/articles')
           .then(res=> {
@@ -146,15 +156,15 @@ console.log(articles)
             <>
               <ArticleForm postArticle={postArticle}
                            updateArticle={updateArticle}
-                           setCurrentArticleId={setCurrentArticleId}
-                          //  currentArticle={currentArticle}
+                           setCurrentArticle={setCurrentArticle}
+                           currentArticle={currentArticle}
               />
               <Articles articles={articles} 
                         getArticles={getArticles} 
                         postArticle={postArticle} 
                         deleteArticle={deleteArticle} 
-                        currentArticleId={currentArticleId} 
-                        setCurrentArticleId={setCurrentArticleId} 
+                        currentArticle={currentArticle} 
+                        setCurrentArticle={setCurrentArticle} 
                         />
             </>
           } />
