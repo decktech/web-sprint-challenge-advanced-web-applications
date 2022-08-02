@@ -21,13 +21,14 @@ export default function App() {
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { navigate('/login') }
+  const redirectToLogin = () => { navigate('/') }
   const redirectToArticles = () => { navigate('/articles') }
   
   const logout = () => {
     localStorage.removeItem("token");
     setMessage("Goodbye!");
-    navigate('/login')
+    redirectToLogin()
+    localStorage.removeItem("token")
     // ✨ implement
     // If a token is in local storage it should be removed,
     // and a message saying "Goodbye!" should be set in its proper state.
@@ -48,6 +49,7 @@ export default function App() {
       })
       .catch(err => {
         console.log(err)
+        redirectToLogin()
       })
     // ✨ implement
     // We should flush the message state, turn on the spinner
@@ -68,7 +70,7 @@ export default function App() {
       })
       .catch(err => {
         console.log(err)
-        // navigate('/login')
+        redirectToLogin()
         setSpinnerOn(false)
       })
     // ✨ implement
@@ -95,7 +97,6 @@ export default function App() {
       })
       .catch(err => {
         console.log(err)
-        navigate('/login')
       })
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
@@ -103,17 +104,22 @@ export default function App() {
     // to inspect the response from the server.
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = ({ article_id}, article) => {
     // ✨ implement
     // You got this! 
     setMessage('');
     setSpinnerOn(true);
-    axiosWithAuth().put(`/articles/2`, { "title": "foo", "text": "bar", "topic": "React" })
+    axiosWithAuth().put(`/articles/${article_id}`, { "title": article.title, "text": article.text, "topic": article.topic })
       .then(res => {
-        console.log(res)
-        setSpinnerOn(false)
+        axiosWithAuth().get('/articles')
+          .then(res => {
+            setArticles(res.data.articles)
+            setSpinnerOn(false)
+          })
+        setMessage(res.data.message)
       })
       .catch(err => {
+        console.log(article)
         console.log(err)
       })
   }
@@ -148,10 +154,12 @@ export default function App() {
         <h1>Advanced Web Applications</h1>
         <nav>
           <NavLink id="loginScreen" to="/">Login</NavLink>
-          <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
+          <NavLink id="articlesScreen" to={localStorage.getItem("token") ? "articles" : "/"}>Articles</NavLink>
         </nav>
         <Routes>
+          
           <Route path="/" element={<LoginForm login={login}/>} />
+
           <Route path="articles" element={
             <>
               <ArticleForm postArticle={postArticle}
@@ -165,7 +173,7 @@ export default function App() {
                         deleteArticle={deleteArticle} 
                         currentArticle={currentArticle} 
                         setCurrentArticle={setCurrentArticle} 
-                        />
+              />
             </>
           } />
         </Routes>
